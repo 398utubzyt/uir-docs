@@ -57,12 +57,11 @@ Below is a table containing values corresponding to a specific integer precision
 
 UIR exposes "virtual registers", meaning that even though these registers may not physically exist,
 they represent real registers and provide an easy way of translating UIR to real machine code. While
-most registers do not have explicit purposes, the table below is a :
+most registers do not have explicit purposes, the table below contains the recommended layout and use-cases for these registers:
 
-| ID(s) | Name | Description |
+| ID(s) | Name | Note |
 |----|----|----|
 | `00` | Zero | This register will always return `0` and any value written to it will be discarded. |
-| `01` | Stack Pointer |  |
 | `09-7F` | General Purpose Integer |  |
 | `80-FF` | General Purpose Floating-point |  |
 
