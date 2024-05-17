@@ -62,7 +62,7 @@ most registers do not have explicit purposes, the table below contains the recom
 | ID(s) | Name | Note |
 |----|----|----|
 | `00` | Zero | This register will always return `0` and any value written to it will be discarded. |
-| `09-7F` | General Purpose Integer |  |
+| `01-7F` | General Purpose Integer |  |
 | `80-FF` | General Purpose Floating-point |  |
 
 > Note: All of the above registers (with the exception of Zero/`00`) can be used as general purpose registers.
@@ -126,39 +126,43 @@ Below is a table of valid opcodes and their descriptions. All opcodes are 8 bits
 | `41` | `fsub` | `<u8:dest, u8:op1, u8:op2>` | Subtracts the floating-point values stored in registers `op1` from `op2` and stores the result in `dest`. |
 | `42` | `fmul` | `<u8:dest, u8:op1, u8:op2>` | Multiplies the floating-point values stored in registers `op1` and `op2` and stores the result in `dest`. |
 | `43` | `fdiv` | `<u8:dest, u8:op1, u8:op2>` | Divides the floating-point values stored in registers `op1` by `op2` and stores the result in `dest`. |
-| `44` | `frem` | `<u8:dest, u8:op1, u8:op2>` | Gets the remainder if |
+| `44` | `frem` | `<u8:dest, u8:op1, u8:op2>` | Gets the remainder of the division operation between the values stored in `op1` and `op2` and stores the result in `dest`. |
 | `45` | `fcvt` | `<u8:dest, u8:target, u8:precision>` | Converts the floating-point value in `from` to the target `precision` and stores the result in `dest`. |
 | `46` | `ifcvt` | `<u8:dest, u8:target, u8:precision>` | Converts the integer value in `from` to the target floating-point `precision` and stores the result in `dest`. |
 | `47` | `ficvt` | `<u8:dest, u8:target, u8:precision>` | Converts the floating-point value in `from` to the target integer `precision` and stores the result in `dest`. |
 | `48` | `fsqrt` | `<u8:dest, u8:operand>` | Calculates the square root of the value in register `operand` and stores the result in `dest`. |
-| `49` | `fmin` | `<u8:dest, u8:op1, u8:op2>` | Gets the minimum value between the registers `op1` and `op2` and stores the result in `dest`. |
-| `4A` | `fmax` | `<u8:dest, u8:op1, u8:op2>` | Gets the maximum value between the registers `op1` and `op2` and stores the result in `dest`. |
-| `4B` | `fsin` | `<u8:dest, u8:operand>` | Calculates the sine of the value in register `operand` in radians and stores the result in `dest`. |
-| `4C` | `fcos` | `<u8:dest, u8:operand>` | Calculates the cosine of the value in register `operand` in radians and stores the result in `dest`. |
-| `4D` | `ftan` | `<u8:dest, u8:operand>` | Calculates the tangent of the value in register `operand` in radians and stores the result in `dest`. |
-| `4E` | `fasin` | `<u8:dest, u8:operand>` | Calculates the arcsine of the value in register `operand` in radians and stores the result in `dest`. |
-| `4F` | `facos` | `<u8:dest, u8:operand>` | Calculates the arccosine of the value in register `operand` in radians and stores the result in `dest`. |
-| `50` | `fatan` | `<u8:dest, u8:operand>` | Calculates the arctangent of the value in register `operand` in radians and stores the result in `dest`. |
-| `51` | `fsinh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic sine of the value in register `operand` in radians and stores the result in `dest`. |
-| `52` | `fcosh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic cosine of the value in register `operand` in radians and stores the result in `dest`. |
-| `53` | `ftanh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic tangent of the value in register `operand` in radians and stores the result in `dest`. |
-| `54` | `fasinh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arcsine of the value in register `operand` in radians and stores the result in `dest`. |
-| `55` | `facosh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arccosine of the value in register `operand` in radians and stores the result in `dest`. |
-| `56` | `fatanh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arctangent of the value in register `operand` in radians and stores the result in `dest`. |
-| `57` | `fcbrt` | `<u8:dest, u8:operand>` | Calculates the cube root of the value in register `operand` and stores the result in `dest`. |
-| `58` | `fround` | `<u8:dest, u8:operand>` | Rounds the value in register `operand` and stores the result in `dest`. |
-| `59` | `fceil` | `<u8:dest, u8:operand>` | Calculates the ceiling of the value in register `operand` and stores the result in `dest`. |
-| `59` | `ffloor` | `<u8:dest, u8:operand>` | Calculates the floor of the value in register `operand` and stores the result in `dest`. |
-| `5A` | `fexp` | `<u8:dest, u8:operand>` | Calculates E to the power of the value in register `operand` and stores the result in `dest`. |
-| `5B` | `fln` | `<u8:dest, u8:operand>` | Calculates the natural logarithm of the value in register `operand` and stores the result in `dest`. |
-| `5C` | `fpow` | `<u8:dest, u8:op1, u8:op2>` | Calculates the power of `op1` to the power of `op2` and stores the result in `dest`. |
+| `49` | `fcbrt` | `<u8:dest, u8:operand>` | Calculates the cube root of the value in register `operand` and stores the result in `dest`. |
+| `4A` | `fsin` | `<u8:dest, u8:operand>` | Calculates the sine of the value in register `operand` in radians and stores the result in `dest`. |
+| `4B` | `fcos` | `<u8:dest, u8:operand>` | Calculates the cosine of the value in register `operand` in radians and stores the result in `dest`. |
+| `4C` | `ftan` | `<u8:dest, u8:operand>` | Calculates the tangent of the value in register `operand` in radians and stores the result in `dest`. |
+| `4D` | `fasin` | `<u8:dest, u8:operand>` | Calculates the arcsine of the value in register `operand` in radians and stores the result in `dest`. |
+| `4E` | `facos` | `<u8:dest, u8:operand>` | Calculates the arccosine of the value in register `operand` in radians and stores the result in `dest`. |
+| `4F` | `fatan` | `<u8:dest, u8:operand>` | Calculates the arctangent of the value in register `operand` in radians and stores the result in `dest`. |
+| `50` | `fsinh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic sine of the value in register `operand` in radians and stores the result in `dest`. |
+| `51` | `fcosh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic cosine of the value in register `operand` in radians and stores the result in `dest`. |
+| `52` | `ftanh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic tangent of the value in register `operand` in radians and stores the result in `dest`. |
+| `53` | `fasinh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arcsine of the value in register `operand` in radians and stores the result in `dest`. |
+| `54` | `facosh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arccosine of the value in register `operand` in radians and stores the result in `dest`. |
+| `55` | `fatanh` | `<u8:dest, u8:operand>` | Calculates the hyperbolic arctangent of the value in register `operand` in radians and stores the result in `dest`. |
+| `56` | `fround` | `<u8:dest, u8:operand>` | Rounds the value in register `operand` and stores the result in `dest`. |
+| `57` | `fceil` | `<u8:dest, u8:operand>` | Calculates the ceiling of the value in register `operand` and stores the result in `dest`. |
+| `58` | `ffloor` | `<u8:dest, u8:operand>` | Calculates the floor of the value in register `operand` and stores the result in `dest`. |
+| `59` | `fexp` | `<u8:dest, u8:operand>` | Calculates E to the power of the value in register `operand` and stores the result in `dest`. |
+| `5A` | `fln` | `<u8:dest, u8:operand>` | Calculates the natural logarithm of the value in register `operand` and stores the result in `dest`. |
+| `5B` | `fpow` | `<u8:dest, u8:op1, u8:op2>` | Calculates the power of `op1` to the power of `op2` and stores the result in `dest`. |
+| `60` | `min` | `<u8:dest, u8:op1, u8:op2>` | Gets the minimum value between the registers `op1` and `op2` and stores the result in `dest`. |
+| `61` | `max` | `<u8:dest, u8:op1, u8:op2>` | Gets the maximum value between the registers `op1` and `op2` and stores the result in `dest`. |
 | `70` | `call` | `<u8:func>` | Jumps to the specified function. |
 | `71` | `ret` | `<>` | Returns from the current function. |
 | `72` | `stret` | `<u8:src>` | Stores the value from `src` into the return register. |
 | `73` | `ldret` | `<u8:dest>` | Loads the value from the return register into `dest`. |
 | `74` | `starg` | `<u8:arg, u8:src>` | Stores the value from `src` into the argument register `arg`. |
 | `75` | `ldarg` | `<u8:arg, u8:dest>` | Loads the value from the argument register `arg` into `src`. |
+| `76` | `streti` | `<imm:value>` | Stores the immediate `value` into the return register. |
+| `77` | `strargi` | `<u8:arg, imm:value>` | Stores the immediate `value` into the argument register `arg`. |
 | `7F` | N/A | N/A | Extends the opcode to the next byte (e.g. 1-byte -> 2-byte, 2-byte -> 3-byte, etc.) |
+| `80` | `lk` | `<>` | Indicates that the following conditional branch instruction is likely to jump. |
+| `81` | `ulk` | `<>` | Indicates that the following conditional branch instruction is unlikely to jump. |
 
 > Note: It's important to notice that **not all available opcodes values are used**. These values are reserved for future use.
 > Backend implementations must fail whenever unsupported opcodes are used in order to ensure a valid state.
