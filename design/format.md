@@ -27,7 +27,13 @@ This document defines the format for a UIR file.
 | `23` | `f32` | The type is a 32-bit floating point number. |
 | `24` | `f64` | The type is a 64-bit floating point number. |
 | `25` | `f128` | The type is a 128-bit floating point number. |
-| `41` | `bool` | The type is an 8-bit boolean. |
+| `41` | `b8` | The type is an 8-bit boolean. |
+| `42` | `b16` | The type is an 16-bit boolean. |
+| `43` | `b32` | The type is an 32-bit boolean. |
+| `44` | `b64` | The type is an 64-bit boolean. |
+| `51` | `c8` | The type is an UTF-8 character. |
+| `52` | `c16` | The type is a UTF-16 character. |
+| `53` | `c32` | The type is a UTF-32 character. |
 | `70` | `isize` | The type is a signed pointer-sized integer. |
 | `71` | `usize` | The type is an unsigned pointer-sized integer. |
 | `80` | `void`[^1] | The function with this return type does not return a value. |
@@ -51,6 +57,8 @@ This document defines the format for a UIR file.
 | `4` | Header | The sequence must be equal to the following in hex values: `55 49 52 21` |
 | `2` | Struct Count | The total number of structs defined in this file. |
 | [Struct Size](#struct-layout) x Count | Struct Layouts | Defines the used structs. |
+| `2` | Union Count | The total number of structs defined in this file. |
+| [Union Size](#union-layout) x Count | Union Layouts | Defines the used unions. |
 | `2` | Global Field Count | The total number of structs defined in this file. |
 | [Field Size](#field-layout) x Count | Global Field Layouts | Defines the used structs. |
 | `2` | Function Count | The total number of functions defined in this file. |
@@ -66,6 +74,15 @@ This document defines the format for a UIR file.
 | `2` | Name Length | The total number of characters in the struct name. Does not include a null character. |
 | Name Length | Struct Name | The name of the struct in UTF-8 encoding. |
 | [Field Size](#field-layout) x Count | Field Members | The number of fields contained within the struct. |
+
+### Union Layout
+
+| Byte Size | Name | Description |
+|----|----|----|
+| `2` | Field Count | The number of fields contained within the union. |
+| `2` | Name Length | The total number of characters in the union name. Does not include a null character. |
+| Name Length | Struct Name | The name of the union in UTF-8 encoding. |
+| [Field Size](#field-layout) x Count | Field Members | The number of fields contained within the union. |
 
 ### Field Layout
 
