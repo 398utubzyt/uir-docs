@@ -55,6 +55,8 @@ This document defines the format for a UIR file.
 | Byte Size | Name | Description |
 |----|----|----|
 | `4` | Header | The sequence must be equal to the following in hex values: `55 49 52 21` |
+| `1` | Metadata Flag | Indicates with a `1` (`true`) that the bytes following contain metadata. Otherwise, `0` (`false`). |
+| [Metadata Size](#metadata-layout) | Metadata Layout[^2] | Describes the binary name, ID, and various other things. |
 | `2` | Struct Count | The total number of structs defined in this file. |
 | [Struct Size](#struct-layout) x Count | Struct Layouts | Defines the used structs. |
 | `2` | Union Count | The total number of structs defined in this file. |
@@ -65,6 +67,31 @@ This document defines the format for a UIR file.
 | [Function Size](#function-layout) x Count | Function Layouts | Defines the used functions. |
 | `2` | Function Body Count | The total number of function bodies defined in this file. |
 | [Function Body Size](#function-body-layout) x Count | Function Body Layouts | Implements the body of every single non-extern function. |
+
+[^2]: Only included if `Metadata Flag` is `1` (`true`).
+
+## Metadata Layout
+
+| Byte Size | Name | Description |
+|----|----|----|
+| `2` | ID Size | The total number of characters in the ID string. Does not include a null character. |
+| ID Size | ID | The internal ID of the UIR binary. This is used when linking binaries. |
+| `4` | Version Major | The major version component of the UIR binary. |
+| `4` | Version Minor | The minor version component of the UIR binary. |
+| `4` | Version Revision | The revision version component of the UIR binary. |
+| `2` | Display Name Size | The total number of characters in the display name. Does not include a null character. |
+| Display Name Size | ID | The display name of the UIR binary. This can be used in code editors and package managers. |
+| `1` | Author Count | The total number of authors which contributed in some way to the UIR binary. |
+| [Author Size](#metadata-author) x Count | Authors | The authors of the UIR binary. |
+
+### Metadata Author
+
+| Byte Size | Name | Description |
+|----|----|----|
+| `2` | Name Size | The total number of characters in the author's name. Does not include a null character. |
+| Name Size | Author Name | The name of the author. |
+
+## Code Layout
 
 ### Struct Layout
 
@@ -81,7 +108,7 @@ This document defines the format for a UIR file.
 |----|----|----|
 | `2` | Field Count | The number of fields contained within the union. |
 | `2` | Name Length | The total number of characters in the union name. Does not include a null character. |
-| Name Length | Struct Name | The name of the union in UTF-8 encoding. |
+| Name Length | Union Name | The name of the union in UTF-8 encoding. |
 | [Field Size](#field-layout) x Count | Field Members | The number of fields contained within the union. |
 
 ### Field Layout
@@ -101,7 +128,7 @@ This document defines the format for a UIR file.
 | `1` | Parameter Count | The amount of parameters that the function requires. |
 | `2` | Body ID | The ID of the function body. Ignore if this function is external. |
 | `2` | Name Length | The total number of characters in the function name. Does not include a null character. |
-| Name Length | Field Name | The name of the function in UTF-8 encoding. |
+| Name Length | Function Name | The name of the function in UTF-8 encoding. |
 | [Parameter Size](#parameter-layout) x Count | Parameters | The parameters of the function. |
 
 ### Parameter Layout
