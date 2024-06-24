@@ -56,16 +56,30 @@ Below is a table containing values corresponding to a specific integer precision
 ## Avaliable Registers
 
 UIR exposes "virtual registers", meaning that even though these registers may not physically exist,
-they represent real registers and provide an easy way of translating UIR to real machine code. While
-most registers do not have explicit purposes, the table below contains the recommended layout and use-cases for these registers:
+they represent real registers and provide an easy way of translating UIR to real machine code. Because
+most registers do not perform explicit functions—meaning there are no sideaffects in using them—they can be used in any order desired by the frontend
+which generates the UIR binary.
+
+### General-Purpose Registers
+
+These registers act as actual general-purpose registers which can be found in real hardware and can only store primitive values.
+To store aggregate values (e.g. structs, vectors, etc.), see the section on [aggregate registers](#aggregate-registers).
 
 | ID(s) | Name | Note |
 |----|----|----|
 | `00` | Zero | This register will always return `0` and any value written to it will be discarded. |
-| `01-7F` | General Purpose Integer |  |
-| `80-FF` | General Purpose Floating-point |  |
+| `01-FF` | General-Purpose Primitives | These registers will hold primitive values. |
 
-> Note: All of the above registers (with the exception of Zero/`00`) can be used as general purpose registers.
+### Aggregate Registers
+
+An aggregate can be a primitive, struct, or a vector-typed value. Operations cannot be performed on these registers directly.
+Instead, values (or fields of these values) must be loaded into a [general-purpose register](#general-purpose-registers) first.
+These registers can be functionally comparable to the stack seen in most modern hardware.
+
+| ID(s) | Name | Note |
+|----|----|----|
+| `0000` | Zero | This register will always return `0` and any value written to it will be discarded. |
+| `0001-FFFF` | Aggregates | These registers will hold aggregate values. |
 
 ## Opcode List
 
@@ -113,15 +127,17 @@ Below is a table of valid opcodes and their descriptions. All opcodes are 8 bits
 | `29` | `ori` | `<u8:dest, u8:op1, imm:value>` | Logically ORs the value in register `op1` with `value` and stores the result in `dest`. |
 | `2A` | `xori` | `<u8:dest, u8:op1, imm:value>` | Logically XORs the value in register `op1` with `value` and stores the result in `dest`. |
 | `30` | `jof` | `<i16:offset>` | Jumps to an instruction by `offset` using the current instruction as the origin. |
-| `31` | `jofl` | `<u8:label>` | Jumps to the specified label. |
-| `32` | `beq` | `<u8:op1, u8:op2>` | Branch if the values in registers `op1` and `op2` are equal. |
-| `33` | `bne` | `<u8:op1, u8:op2>` | Branch if the values in registers `op1` and `op2` are not equal. |
-| `34` | `bgt` | `<u8:op1, u8:op2>` | Branch if the value in register `op1` is greater than the value in register `op2`. |
-| `35` | `blt` | `<u8:op1, u8:op2>` | Branch if the value in register `op1` is less than the value in register `op2`. |
-| `36` | `bge` | `<u8:op1, u8:op2>` | Branch if the value in register `op1` is greater than or equal to the value in register `op2`. |
-| `37` | `ble` | `<u8:op1, u8:op2>` | Branch if the value in register `op1` is less than or equal to the value in register `op2`. |
-| `38` | `bgi` | `<u8:op1, imm:value>` | Branch if the value in register `op1` is greater than `value`. |
-| `39` | `bli` | `<u8:op1, imm:value>` | Branch if the value in register `op1` is less than `value`. |
+| `31` | `jlb` | `<u8:label>` | Jumps to the specified label. |
+| `32` | `beq` | `<u8:label, u8:op1, u8:op2>` | Branch if the values in registers `op1` and `op2` are equal. |
+| `33` | `bne` | `<u8:label, u8:op1, u8:op2>` | Branch if the values in registers `op1` and `op2` are not equal. |
+| `34` | `bgt` | `<u8:label, u8:op1, u8:op2>` | Branch if the value in register `op1` is greater than the value in register `op2`. |
+| `35` | `blt` | `<u8:label, u8:op1, u8:op2>` | Branch if the value in register `op1` is less than the value in register `op2`. |
+| `36` | `bge` | `<u8:label, u8:op1, u8:op2>` | Branch if the value in register `op1` is greater than or equal to the value in register `op2`. |
+| `37` | `ble` | `<u8:label, u8:op1, u8:op2>` | Branch if the value in register `op1` is less than or equal to the value in register `op2`. |
+| `38` | `bgi` | `<u8:label, u8:op1, imm:value>` | Branch if the value in register `op1` is greater than `value`. |
+| `39` | `bli` | `<u8:label, u8:op1, imm:value>` | Branch if the value in register `op1` is less than `value`. |
+| `3A` | `inc` | `<u8:op1>` | Increments the value in register `op1` by 1. |
+| `3B` | `dec` | `<u8:op1>` | Decrements the value in register `op1` by 1. |
 | `40` | `fadd` | `<u8:dest, u8:op1, u8:op2>` | Adds the floating-point values stored in registers `op1` and `op2` and stores the result in `dest`. |
 | `41` | `fsub` | `<u8:dest, u8:op1, u8:op2>` | Subtracts the floating-point values stored in registers `op1` from `op2` and stores the result in `dest`. |
 | `42` | `fmul` | `<u8:dest, u8:op1, u8:op2>` | Multiplies the floating-point values stored in registers `op1` and `op2` and stores the result in `dest`. |
@@ -163,6 +179,8 @@ Below is a table of valid opcodes and their descriptions. All opcodes are 8 bits
 | `7F` | N/A | N/A | Extends the opcode to the next byte (e.g. 1-byte -> 2-byte, 2-byte -> 3-byte, etc.) |
 | `80` | `lk` | `<>` | Indicates that the following conditional branch instruction is likely to jump. |
 | `81` | `ulk` | `<>` | Indicates that the following conditional branch instruction is unlikely to jump. |
+| `90` | `lda` | `<u8:dest, u16:aggsrc, u16:type, u16:index>` | Loads an aggregate value from `aggsrc` to `dest`. Fields/elements of the aggregate can be loaded using the `type` ID and the `index` of the field/element. |
+| `91` | `sta` | `<u16:aggdest, u16:type, u16:index, u8:src>` | Stores a primitive value from `src` into `aggdest`. Fields/elements of the aggregate can be stored into using the `type` ID and the `index` of the field/element. |
 
 > Note: It's important to notice that **not all available opcodes values are used**. These values are reserved for future use.
 > Backend implementations must fail whenever unsupported opcodes are used in order to ensure a valid state.
